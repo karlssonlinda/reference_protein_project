@@ -11,36 +11,37 @@ from sklearn.decomposition import TruncatedSVD
 import sklearn as skl
 import statsmodels.formula.api as smf
 
-"""
-Returns the intersection of two lists.
 
-Inputs:
-    - lst1 (list): List 1.
-    - lst2 (list): List 2.
-    
-Outputs: 
-    - lst3 (list): Intersection of lst1 and lst2.
-"""
 def intersection(lst1, lst2):
+    """
+    Returns the intersection of two lists.
+
+    Inputs:
+        - lst1 (list): List 1.
+        - lst2 (list): List 2.
+
+    Outputs: 
+        - lst3 (list): Intersection of lst1 and lst2.
+    """
     lst3 = [value for value in lst1 if value in lst2]
     return lst3
 
 
-"""
-Returns linear regression coefficients and p-values after standardization of all variables. 
-
-Inputs: 
-    - df (DataFrame): DataFrame including main predictor, outcome and confounders.
-    - main_pred (String): Name of main predictor.
-    - outcome (String): Name of outcome.
-    - confounders (List): List of names of confounders.
-    
-Outputs:
-    - betas (Series): Series of beta coefficients.
-    - pvals (Series): Series of p-values.
-
-"""
 def get_linreg(df,main_pred,outcome,confounders=[]):
+    """
+    Returns linear regression coefficients and p-values after standardization of all variables. 
+
+    Inputs: 
+        - df (DataFrame): DataFrame including main predictor, outcome and confounders.
+        - main_pred (String): Name of main predictor.
+        - outcome (String): Name of outcome.
+        - confounders (List): List of names of confounders.
+
+    Outputs:
+        - betas (Series): Series of beta coefficients.
+        - pvals (Series): Series of p-values.
+
+    """
     X = df[[main_pred,outcome] + confounders]
     X_n = StandardScaler().fit_transform(X)
     X_n = pd.DataFrame(X_n, columns=X.columns)
@@ -53,23 +54,23 @@ def get_linreg(df,main_pred,outcome,confounders=[]):
     return betas,pvals
 
 
-"""
-Loops over a list of protein candidates that can strenghten the association between the baseline variables and
-y. Data from each candidate should exist in df. Returns the best candidates and their corresponding AUC scores.
-
-Inputs: 
-    - df (DataFrame): DataFrame with columns of independent variables/inputs/predictors to be fitted against.
-    - y (list, DataFrame): dependent variable/output/response variable of logistic regression.
-    - candidates (list): list of candidate names. Each candidate should have a column in df.
-    - baseline_vars (list): name of baseline variables to be used as predictors in the regression model.
-    - amount (int): amount of best candidates to return (defaults to 10).
-    - n_splits (int): number of splits in cross-validation (defaults to 10).
-    
-Outputs: 
-    - best_AUC (list): list of amount highest AUC scores (decreasing order).
-    - names_best_AUC (list): list of corresponding best_AUC candidate names (decreasing order).
-"""
 def get_best_candidates(df,y_true,candidates,baseline_vars,amount=10,n_splits=10):
+    """
+    Loops over a list of protein candidates that can strenghten the association between the baseline variables and
+    y. Data from each candidate should exist in df. Returns the best candidates and their corresponding AUC scores.
+
+    Inputs: 
+        - df (DataFrame): DataFrame with columns of independent variables/inputs/predictors to be fitted against.
+        - y (list, DataFrame): dependent variable/output/response variable of logistic regression.
+        - candidates (list): list of candidate names. Each candidate should have a column in df.
+        - baseline_vars (list): name of baseline variables to be used as predictors in the regression model.
+        - amount (int): amount of best candidates to return (defaults to 10).
+        - n_splits (int): number of splits in cross-validation (defaults to 10).
+
+    Outputs: 
+        - best_AUC (list): list of amount highest AUC scores (decreasing order).
+        - names_best_AUC (list): list of corresponding best_AUC candidate names (decreasing order).
+    """
     best_AUC = np.zeros(amount)
     names_best_AUC = np.zeros(amount).astype(str)
 
@@ -93,44 +94,45 @@ def get_best_candidates(df,y_true,candidates,baseline_vars,amount=10,n_splits=10
     return best_AUC, names_best_AUC
 
 
-"""
-Computes the mean AUC score after performing a cross-validation.
 
-Inputs:
-    - X (DataFrame): DataFrame containing subjects and relevant variables.
-    - y (array): Array of labels for corresponding subjects in X.
-    - variables (list): List of columns in X to use in the classifier.
-    - n_splits (int): Split in cross-validation (defaults to 10).
-    - clf (classifier): model to train for classification (defaults to LogisticRegression()).
-    - scoring (String): scoring to evaluate (defaults to 'roc_auc').
-
-Outputs:
-    - mean_score (int): mean score from cross-validation.
-"""
 def get_mean_AUC_score(X,y,variables,n_splits=10,clf = LogisticRegression(),scoring='roc_auc'):
+    """
+    Computes the mean AUC score after performing a cross-validation.
+
+    Inputs:
+        - X (DataFrame): DataFrame containing subjects and relevant variables.
+        - y (array): Array of labels for corresponding subjects in X.
+        - variables (list): List of columns in X to use in the classifier.
+        - n_splits (int): Split in cross-validation (defaults to 10).
+        - clf (classifier): model to train for classification (defaults to LogisticRegression()).
+        - scoring (String): scoring to evaluate (defaults to 'roc_auc').
+
+    Outputs:
+        - mean_score (int): mean score from cross-validation.
+    """
     scores = cross_val_score(clf, X[variables], y, cv=n_splits,scoring=scoring)
     mean_score = np.mean(scores)
     return mean_score
 
 
-"""
-Splits X and y into folds, standard scales them (fitted from X_train), and prepares each X_test fold with selected noise type and noise level. 
-
-Inputs:
-    - X (DataFrame): Dataframe containing data for all subjects and candidates.
-    - y (array): Array of labels for corresponding subjects in X.
-    - noise (int): 1 (measurement noise) or 2 (assay drift).
-    - candidates (list): List of protein candidates.
-    - strength (float): Strength of noise/noise level (defaults to 0).
-    - n_splits (int): number of folds to split data into (deafults to 10).
-    
-Outputs:
-    - X_trains (list): List of n_splits standardized X_train sets.
-    - X_tests (list): List of n_splits standardized X_test sets with added noise.
-    - y_trains (list): List of n_splits y_train sets.
-    - y_tests (list): List of n_splits y_test sets.
-"""
 def prep_folds_with_noise(X,y,nt,candidates, strength=0.0, n_splits=10):
+    """
+    Splits X and y into folds, standard scales them (fitted from X_train), and prepares each X_test fold with selected noise type and noise level. 
+
+    Inputs:
+        - X (DataFrame): Dataframe containing data for all subjects and candidates.
+        - y (array): Array of labels for corresponding subjects in X.
+        - noise (int): 1 (measurement noise) or 2 (assay drift).
+        - candidates (list): List of protein candidates.
+        - strength (float): Strength of noise/noise level (defaults to 0).
+        - n_splits (int): number of folds to split data into (deafults to 10).
+
+    Outputs:
+        - X_trains (list): List of n_splits standardized X_train sets.
+        - X_tests (list): List of n_splits standardized X_test sets with added noise.
+        - y_trains (list): List of n_splits y_train sets.
+        - y_tests (list): List of n_splits y_test sets.
+    """
     kf = KFold(n_splits = n_splits)
     X_trains = []
     X_tests = []
@@ -154,20 +156,20 @@ def prep_folds_with_noise(X,y,nt,candidates, strength=0.0, n_splits=10):
     return X_trains, X_tests, y_trains, y_tests
 
 
-"""
-Adds selected noise to data.
-
-Inputs: 
-    - X (array): Data to add noise to.
-    - nt (int): 1 (measurement noise) or 2 (assay drift).
-    - strength (float): Strength of noise/noise level.
-    - candidates (list): List of protein candidates.
-    
-Outputs:
-    - X_noise (array): Data with added noise.
-     
-"""
 def add_noise(X,nt,strength,candidates):
+    """
+    Adds selected noise to data.
+
+    Inputs: 
+        - X (array): Data to add noise to.
+        - nt (int): 1 (measurement noise) or 2 (assay drift).
+        - strength (float): Strength of noise/noise level.
+        - candidates (list): List of protein candidates.
+
+    Outputs:
+        - X_noise (array): Data with added noise.
+
+    """
     X_noise = X.copy()
     X_use = X_noise[candidates]
     if nt == 1:
@@ -182,38 +184,38 @@ def add_noise(X,nt,strength,candidates):
     return X_noise
 
 
-"""
-Trains and evaluates a logistic regression according to specific train/test-folds.
-
-Inputs:
-    - X_train (array): Train data.
-    - X_test (array): Test data.
-    - y_train (array): Train labels.
-    - y_test (array): Test labels.
-Outputs:
-    - score (float): Corresponding AUC score for test data.
-
-"""
 def train_and_predict(X_train, y_train, X_test, y_test):
+    """
+    Trains and evaluates a logistic regression according to specific train/test-folds.
+
+    Inputs:
+        - X_train (array): Train data.
+        - X_test (array): Test data.
+        - y_train (array): Train labels.
+        - y_test (array): Test labels.
+    Outputs:
+        - score (float): Corresponding AUC score for test data.
+
+    """
     logreg = LogisticRegression()
     logreg.fit(X_train,y_train)
     score = roc_auc_score(y_test, logreg.predict_proba(X_test)[:, 1])
     return score
 
 
-"""
-Trains and evaluates a logistic regression using either 1, a single reference candidate or 2, the SVD of several reference candidates.
-
-Inputs:
-    - X_train (array): Train data.
-    - X_test (array): Test data.
-    - y_train (array): Train labels.
-    - y_test (array): Test labels.
-Outputs:
-    - score (float): Corresponding AUC score for test data.
-
-"""
 def get_svd_score(X_train,X_test,y_train,y_test,candidates,pred):
+    """
+    Trains and evaluates a logistic regression using either 1, a single reference candidate or 2, the SVD of several reference candidates.
+
+    Inputs:
+        - X_train (array): Train data.
+        - X_test (array): Test data.
+        - y_train (array): Train labels.
+        - y_test (array): Test labels.
+    Outputs:
+        - score (float): Corresponding AUC score for test data.
+
+    """
     if len(candidates) == 1:
         X_train['ref_svd'] = X_train[candidates]
         X_test['ref_svd'] = X_test[candidates]
@@ -229,21 +231,21 @@ def get_svd_score(X_train,X_test,y_train,y_test,candidates,pred):
     return score
 
 
-"""
-Bootstraps the roc auc scores for a selected classifier.
-
-Inputs: 
-    - X (DataFrame): Dataframe containing data for all subjects and candidates.
-    - y (array): Array of labels for corresponding subjects in X.
-    - kind (int): 0 for test with a single reference, 1 for test with svd of several references and 2 for test with mean level of several references (defaults to 0).
-    - prots (list): List of reference proteins, only needed if kind = 1 or 2 (defaults to None).
-    - n_iter (int): number of iterations in bootstrap (defaults to 1000).
-    - clf (sklearn classifier): classifier used for prediction (defaults to LogisticRegression()).
-    
-Outputs: 
-    - roc_auc_scores (list): list of the n_iter resulting roc auc scores.
-"""
 def bootstrap_roc_auc(X,y,kind = 0,prots = None,n_iter=2000,clf=LogisticRegression()):
+    """
+    Bootstraps the roc auc scores for a selected classifier.
+
+    Inputs: 
+        - X (DataFrame): Dataframe containing data for all subjects and candidates.
+        - y (array): Array of labels for corresponding subjects in X.
+        - kind (int): 0 for test with a single reference, 1 for test with svd of several references and 2 for test with mean level of several references (defaults to 0).
+        - prots (list): List of reference proteins, only needed if kind = 1 or 2 (defaults to None).
+        - n_iter (int): number of iterations in bootstrap (defaults to 1000).
+        - clf (sklearn classifier): classifier used for prediction (defaults to LogisticRegression()).
+
+    Outputs: 
+        - roc_auc_scores (list): list of the n_iter resulting roc auc scores.
+    """
     roc_auc_scores = []
     for n_iter in tqdm(range(n_iter)):
         clf_use = skl.base.clone(clf)
@@ -284,26 +286,26 @@ def bootstrap_roc_auc(X,y,kind = 0,prots = None,n_iter=2000,clf=LogisticRegressi
 
 
 
-"""
-Bootstraps and compares roc auc scores using two references. Results can be used to test significance.
-
-Inputs: 
-    - X (DataFrame): Dataframe containing data for all subjects and candidates.
-    - y (array): Array of labels for corresponding subjects in X.
-    - kind1 (int): 0 for test with a single or no reference, 1 for test with svd of several references and 2 for test with mean level of several references (defaults to 0).
-    - kind2 (int): 0 for test with a single or no reference, 1 for test with svd of several references and 2 for test with mean level of several references (defaults to 0).
-    - main (list): List of main predictors.
-    - prots1 (list): List of reference proteins for first reference.
-    - prots2 (list): List of reference proteins for second reference.
-    - n_iter (int): number of iterations in bootstrap (defaults to 1000).
-    - clf (sklearn classifier): classifier used for prediction (defaults to LogisticRegression()).
-    
-Outputs: 
-    - roc_auc_diffs (list): list of to n_iter roc auc differences between the two models.
-    - aucs1 (list): list of the n_iter resulting roc auc scores for model with first reference.
-    - aucs2 (list): list of the n_iter resulting roc auc scores for model with second reference.
-"""
 def test_bootstrap_roc_auc(X,y, kind1 = 0, kind2 = 0, main =[], prots1 = [], prots2 = [],n_iter=2000,clf=LogisticRegression()):
+    """
+    Bootstraps and compares roc auc scores using two references. Results can be used to test significance.
+
+    Inputs: 
+        - X (DataFrame): Dataframe containing data for all subjects and candidates.
+        - y (array): Array of labels for corresponding subjects in X.
+        - kind1 (int): 0 for test with a single or no reference, 1 for test with svd of several references and 2 for test with mean level of several references (defaults to 0).
+        - kind2 (int): 0 for test with a single or no reference, 1 for test with svd of several references and 2 for test with mean level of several references (defaults to 0).
+        - main (list): List of main predictors.
+        - prots1 (list): List of reference proteins for first reference.
+        - prots2 (list): List of reference proteins for second reference.
+        - n_iter (int): number of iterations in bootstrap (defaults to 1000).
+        - clf (sklearn classifier): classifier used for prediction (defaults to LogisticRegression()).
+
+    Outputs: 
+        - roc_auc_diffs (list): list of to n_iter roc auc differences between the two models.
+        - aucs1 (list): list of the n_iter resulting roc auc scores for model with first reference.
+        - aucs2 (list): list of the n_iter resulting roc auc scores for model with second reference.
+    """
     roc_auc_diffs = []
     aucs1 = []
     aucs2 = []
