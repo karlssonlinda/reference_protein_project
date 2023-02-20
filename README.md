@@ -17,8 +17,6 @@ Python:
 
 R:
 - tidyverse
-- pwr
-- ROCR
 - pROC
 
 
