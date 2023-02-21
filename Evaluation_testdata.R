@@ -1,6 +1,4 @@
 library(tidyverse)
-library(pwr)
-library(ROCR)
 library(pROC)
 
 setwd('') #INPUT working directory
