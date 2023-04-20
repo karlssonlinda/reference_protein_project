@@ -4,7 +4,7 @@ Code for work in "Adjusting for CSF Reference Proteins Improves Biomarker Accura
 This repository aims to provide details of how the results in "Adjusting for CSF Reference Proteins Improves Biomarker Accuracy" were created. Due to data sharing policies, most scripts and functions have been reduced to algorithmic descriptiveness and cannot be run without firstly specifying input data and data variable names. 
 
 ## Dependencies
-Code was written in Python version 3.9 and R version 4.2. Required packages version:
+Code was written in Python version 3.9 and R version 4.2. Required packages:
 
 Python:
 - sklearn 0.0
