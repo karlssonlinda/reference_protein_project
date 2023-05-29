@@ -18,6 +18,7 @@ Python:
 R:
 - tidyverse 1.3.2
 - pROC 1.18.0
+- EWCE 1.4.0
 
 
 ## File description
