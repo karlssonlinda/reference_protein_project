@@ -1,5 +1,5 @@
 # reference_protein_project
-Code for work in "Adjusting for CSF Reference Proteins Improves Biomarker Accuracy", created by Linda Karlsson 2023.
+Code for work in "Cerebrospinal fluid reference proteins increase accuracy and interpretability of biomarkers for brain diseases", created by Linda Karlsson 2023.
 
 This repository aims to provide details of how the results in "Adjusting for CSF Reference Proteins Improves Biomarker Accuracy" were created. Due to data sharing policies, most scripts and functions have been reduced to algorithmic descriptiveness and cannot be run without firstly specifying input data and data variable names. 
 
