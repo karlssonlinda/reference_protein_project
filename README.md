@@ -26,4 +26,4 @@ R:
 All created python functions were included in Functions.py, and examples of how they were used are given in the notebooks. In TSNE-clustering.ipynb, dimensionality reduction, K-means clustering and cluster evaluation is included. In Evaluation.ipynb, logistic regression evaluations and significance test on bootstrapped models can be found. Additionally, computation of linear regression and partial correlations are provided. In Robustness_Analysis, 
 the methodology of evaluating models with added noise is given. 
 
-The R-script Evaluation_testdata.R evaluates performance and significance on unseen testdata, comparing ROC curves. 
+The R-script Evaluation_testdata.R evaluates performance and significance on unseen testdata, comparing ROC curves. Bootstrap_enrichment_test.R compares cell type expression of a cluster of proteins against a background set of proteins.
