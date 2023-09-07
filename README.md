@@ -20,6 +20,7 @@ R:
 - pROC 1.18.0
 - EWCE 1.4.0
 
+Installation is typical fast and can be done within a few minutes.
 
 ## File description
 
