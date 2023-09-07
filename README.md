@@ -28,3 +28,5 @@ All created python functions were included in Functions.py, and examples of how 
 the methodology of evaluating models with added noise is given. 
 
 The R-script Evaluation_testdata.R evaluates performance and significance on unseen testdata, comparing ROC curves. Bootstrap_enrichment_test.R compares cell type expression of a cluster of proteins against a background set of proteins.
+
+The running time is very dependent on the size of the dataframe - with the simulated data all runs should maximum take a few seconds. With larger dataframes, expect times increasing to one or several minutes.
